@@ -1,0 +1,21 @@
+/* review_booking.css */
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.button {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cancel Booking – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/cancel_booking.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Cancel Booking</h1>
+        </header>
+        <form class="glass" style="padding:2rem; max-width:500px; margin:auto;">
+            <p>Please provide a reason for cancellation:</p>
+            <textarea id="cancel-reason" rows="4"
+                style="width:100%; padding:0.5rem; border:none; border-radius:6px; background:var(--color-surface); color:var(--color-text);"></textarea>
+            <p>Refund Amount (if applicable): <strong id="refund-amount">EGP 0</strong></p>
+            <button type="submit" class="button" style="margin-top:1rem; width:100%;">Confirm Cancellation</button>
+        </form>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const reason = document.getElementById('cancel-reason').value;
+
+            if (!id) {
+                alert('No booking specified');
+                window.location.href = 'booking_history.html';
+                return;
+            }
+
+            if (confirm('Confirm cancellation?')) {
+                try {
+                    await API.cancelBooking(id);
+                    // could log reason
+                    alert('Booking cancelled successfully.');
+                    window.location.href = 'booking_history.html';
+                } catch (err) {
+                    alert('Cancellation failed: ' + err.message);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+/* my_bookings.css */
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.booking-item {
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.button {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+}

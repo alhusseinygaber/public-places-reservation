@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Places Reservation System</title>
+  <link rel="stylesheet" href="../styles/main.css" />
+  <link rel="stylesheet" href="../styles/landing.css" />
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+</head>
+
+<body>
+  <div class="container">
+    <header class="glass" style="text-align:center; margin-top:2rem;">
+      <img src="../assets/logo.svg" alt="Logo" style="width: 80px; height: 80px; margin-bottom: 1rem;">
+      <h1>Public Places Reservation System</h1>
+      <p>Book public spaces in Egypt easily, 24/7.</p>
+    </header>
+    <nav id="dynamic-nav" class="glass" style="display:flex; justify-content:center; gap:1rem; margin:2rem 0;">
+      <!-- Content injected by navbar.js -->
+      <a href="register.html" class="button">Create a New Account</a>
+      <a href="login.html" class="button">Log In</a>
+      <a href="all_places.html" class="button">Browse Spaces</a>
+    </nav>
+    <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+      <label for="theme-toggle">Light Mode</label>
+      <input type="checkbox" id="theme-toggle" />
+    </footer>
+  </div>
+  <script src="../scripts/theme.js"></script>
+  <script src="../scripts/api.js"></script>
+  <script src="../scripts/navbar.js"></script>
+</body>
+
+</html>

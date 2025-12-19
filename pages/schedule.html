@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/schedule.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Choose Date & Time</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0;">
+            <div class="calendar" id="calendar">
+                <!-- Simple calendar placeholder -->
+                <p>Calendar component goes here</p>
+            </div>
+            <div class="time-slots" id="time-slots" style="margin-top:1rem;">
+                <p>Select an available time slot:</p>
+                <div class="slots-grid">
+                    <!-- Time slot buttons will be injected -->
+                </div>
+            </div>
+            <p class="price-info" style="margin-top:1rem;">Price: <span id="slot-price">EGP 0</span></p>
+            <button class="button" id="continue-btn" style="margin-top:1rem;">Continue Booking</button>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const venueId = params.get('venueId');
+            if (!venueId) {
+                alert('No venue selected');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            let venuePrice = 0;
+            try {
+                const venue = await API.getVenue(venueId);
+                venuePrice = venue.price;
+                document.getElementById('slot-price').textContent = `${venuePrice} EGP`;
+            } catch (e) { console.error(e); }
+
+            // Replace calendar with date input
+            const calendarDiv = document.getElementById('calendar');
+            calendarDiv.innerHTML = '<input type="date" id="booking-date" style="padding:0.5rem; border-radius:8px; border:none; width:100%;">';
+
+            // Generate slots
+            const slotsDiv = document.querySelector('.slots-grid');
+            const slots = ['09:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00', '17:00 - 19:00'];
+
+            // Add grid style if not in css
+            slotsDiv.style.display = 'grid';
+            slotsDiv.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
+            slotsDiv.style.gap = '0.5rem';
+
+            let selectedSlot = null;
+
+            slots.forEach(slot => {
+                const btn = document.createElement('button');
+                btn.textContent = slot;
+                btn.className = 'slot-btn'; // styling needed
+                btn.style.padding = '0.5rem';
+                btn.style.border = '1px solid var(--color-primary)';
+                btn.style.background = 'transparent';
+                btn.style.color = 'var(--color-text)';
+                btn.style.borderRadius = '6px';
+                btn.style.cursor = 'pointer';
+
+                btn.onclick = () => {
+                    document.querySelectorAll('.slot-btn').forEach(b => {
+                        b.style.background = 'transparent';
+                        b.style.color = 'var(--color-text)';
+                    });
+                    btn.style.background = 'var(--color-primary)';
+                    btn.style.color = '#fff';
+                    selectedSlot = slot;
+                };
+                slotsDiv.appendChild(btn);
+            });
+
+            document.getElementById('continue-btn').onclick = () => {
+                const date = document.getElementById('booking-date').value;
+                if (!date || !selectedSlot) {
+                    alert('Please select both a date and a time slot.');
+                    return;
+                }
+
+                // Save draft
+                const draft = {
+                    venueId,
+                    venuePrice,
+                    date,
+                    timeSlot: selectedSlot
+                };
+                sessionStorage.setItem('bookingDraft', JSON.stringify(draft));
+                window.location.href = 'companions.html';
+            };
+        });
+    </script>
+</body>
+
+</html>

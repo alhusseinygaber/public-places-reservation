@@ -1,0 +1,12 @@
+/* privacy.css */
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+}

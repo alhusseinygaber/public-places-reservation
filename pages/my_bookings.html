@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Bookings – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/my_bookings.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>My Bookings</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:1rem;" id="bookings-list">
+            <!-- Bookings will be injected here -->
+            <p>Loading your bookings...</p>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script src="../scripts/loading.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = typeof API !== 'undefined' ? API.getToken() : localStorage.getItem('token');
+            if (!token) {
+                alert('Please log in to view your bookings');
+                window.location.href = 'login.html';
+                return;
+            }
+            showLoading();
+            try {
+                const bookings = await API.getBookings(); // assumed method
+                const listEl = document.getElementById('bookings-list');
+                listEl.innerHTML = '';
+                if (!bookings || bookings.length === 0) {
+                    listEl.innerHTML = '<p>No bookings found.</p>';
+                } else {
+                    bookings.forEach(b => {
+                        const div = document.createElement('div');
+                        div.className = 'booking-item';
+                        div.style.border = '1px solid var(--color-primary)';
+                        div.style.borderRadius = '8px';
+                        div.style.padding = '0.5rem';
+                        div.style.marginBottom = '0.5rem';
+                        div.innerHTML = `
+                            <p><strong>Venue:</strong> ${b.venueName || b.venueId}</p>
+                            <p><strong>Date:</strong> ${b.date}</p>
+                            <p><strong>Time:</strong> ${b.timeSlot}</p>
+                            <p><strong>Status:</strong> ${b.status}</p>
+                        `;
+                        if (b.status === 'Active') {
+                            const cancelBtn = document.createElement('button');
+                            cancelBtn.textContent = 'Cancel Booking';
+                            cancelBtn.className = 'button';
+                            cancelBtn.style.marginTop = '0.5rem';
+                            cancelBtn.onclick = async () => {
+                                if (confirm('Are you sure you want to cancel this booking?')) {
+                                    showLoading();
+                                    try {
+                                        await API.cancelBooking(b.id);
+                                        alert('Booking cancelled');
+                                        location.reload();
+                                    } catch (e) {
+                                        console.error(e);
+                                        alert('Failed to cancel');
+                                    } finally {
+                                        hideLoading();
+                                    }
+                                }
+                            };
+                            div.appendChild(cancelBtn);
+                        }
+                        listEl.appendChild(div);
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error loading bookings');
+            } finally {
+                hideLoading();
+            }
+        });
+    </script>
+</body>
+
+</html>

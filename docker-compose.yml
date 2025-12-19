@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist SQLite database file
+      - ./backend/prisma/dev.db:/app/prisma/dev.db
+      # Mount source for hot reload (optional for dev)
+      # - ./backend/src:/app/src
+    environment:
+      - PORT=3000
+      - DATABASE_URL=file:./dev.db
+      - JWT_SECRET=docker_secret_key_change_me
+    # To run seed on first up:
+    # command: sh -c "npx prisma migrate deploy && npm run start"

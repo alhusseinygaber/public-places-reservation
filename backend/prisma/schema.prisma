@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  nationalId   String   @unique
+  phone        String   @unique
+  email        String   @unique
+  passwordHash String
+  dob          DateTime
+  nationality  String
+  address      String
+  postalCode   String
+  userType     String   // Visitor, Employee, Admin
+  createdAt    DateTime @default(now())
+  profileImage String?
+  bookings     Booking[]
+  contacts     Contact[]
+}
+
+model Venue {
+  id          Int      @id @default(autoincrement())
+  name        String
+  province    String
+  latitude   Float?   // optional latitude
+  longitude  Float?   // optional longitude
+  type        String   // Museum, Park, Stadium, etc.
+  description String?
+  address     String
+  price       Float
+  capacity    Int
+  images      String // URLs or paths (comma‑separated)
+  bookings    Booking[]
+
+model Booking {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  venue       Venue    @relation(fields: [venueId], references: [id])
+  venueId     Int
+  date        DateTime
+  timeSlot    String   // e.g., "10:00-12:00"
+  tickets     Int
+  totalPrice  Float
+  status      String   // Active, Cancelled, Completed
+  qrCodeData  String?  // Base64 PNG
+  createdAt   DateTime @default(now())
+  payment     Payment?
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  booking       Booking  @relation(fields: [bookingId], references: [id])
+  bookingId     Int @unique
+  method        String   // Meeza, Stripe, etc.
+  amount        Float
+  status        String   // Success, Failed
+  transactionId String?
+  createdAt     DateTime @default(now())
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}

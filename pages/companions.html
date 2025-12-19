@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Companions – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/companions.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Number of Visitors</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:1rem;">
+            <label for="visitors" style="display:block; margin-bottom:0.5rem;">Visitors (including yourself):</label>
+            <input type="number" id="visitors" min="1" value="1"
+                style="width:100%; padding:0.5rem; border-radius:8px; border:none;" />
+            <button class="button" id="continue-btn" style="margin-top:1rem;">Continue to Review</button>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const draft = JSON.parse(sessionStorage.getItem('bookingDraft') || '{}');
+            if (!draft.venueId) {
+                alert('No booking data found');
+                window.location.href = 'all_places.html';
+                return;
+            }
+            document.getElementById('continue-btn').onclick = () => {
+                const visitors = parseInt(document.getElementById('visitors').value, 10) || 1;
+                draft.visitors = visitors;
+                sessionStorage.setItem('bookingDraft', JSON.stringify(draft));
+                window.location.href = 'review_booking.html';
+            };
+        });
+    </script>
+</body>
+
+</html>

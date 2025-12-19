@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/payment.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Payment</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:2rem;">
+            <p>Select a payment method:</p>
+            <label><input type="radio" name="payment-method" value="meeza" required /> Meeza</label><br />
+            <label><input type="radio" name="payment-method" value="e-wallet" /> E‑Wallet</label><br />
+            <label><input type="radio" name="payment-method" value="bank" /> Bank Account</label>
+            <button class="button" style="margin-top:1rem; width:100%;">Pay Now</button>
+            <div id="payment-result" style="margin-top:1rem; display:none;">
+                <p class="success" style="color:var(--color-primary);">Payment Successful!</p>
+                <p class="failure" style="color:#ff6666; display:none;">Payment Failed. Please retry.</p>
+            </div>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        document.querySelector('button.button').onclick = async () => {
+            const methodInput = document.querySelector('input[name="payment-method"]:checked');
+            if (!methodInput) {
+                alert('Please select a payment method');
+                return;
+            }
+            const method = methodInput.value;
+
+            const bookingId = sessionStorage.getItem('currentBookingId');
+            const draft = JSON.parse(sessionStorage.getItem('bookingDraft')); // needed for amount
+
+            if (!bookingId || !draft) {
+                alert('No booking found');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            try {
+                // Mock payment
+                const res = await API.processPayment({
+                    bookingId,
+                    method,
+                    amount: draft.totalPrice
+                });
+
+                if (res.success) {
+                    window.location.href = 'confirmation.html';
+                }
+            } catch (err) {
+                alert('Payment failed: ' + err.message);
+            }
+        };
+    </script>
+</body>
+
+</html>

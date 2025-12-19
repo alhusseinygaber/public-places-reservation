@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Summary – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/booking_summary.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Booking Summary</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:2rem;">
+            <p><strong>Venue:</strong> <span id="summary-venue">Venue Name</span></p>
+            <p><strong>Date & Time:</strong> <span id="summary-datetime">2025-12-20 10:00</span></p>
+            <p><strong>Number of Tickets:</strong> <span id="summary-tickets">1</span></p>
+            <p><strong>Total Price:</strong> <span id="summary-price">EGP 100</span></p>
+            <p><strong>Cancellation Policy:</strong> <span id="summary-policy">Free cancellation up to 24h
+                    before.</span></p>
+            <button class="button" id="proceed-payment" style="margin-top:1rem; width:100%;">Go to Payment</button>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const draft = JSON.parse(sessionStorage.getItem('bookingDraft'));
+            if (!draft) {
+                alert('No booking in progress');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            document.getElementById('summary-datetime').textContent = `${draft.date} @ ${draft.timeSlot}`;
+            document.getElementById('summary-tickets').textContent = draft.tickets;
+            document.getElementById('summary-price').textContent = `${draft.totalPrice} EGP`;
+            document.getElementById('summary-venue').textContent = 'Loading...';
+
+            try {
+                const venue = await API.getVenue(draft.venueId);
+                document.getElementById('summary-venue').textContent = venue.name;
+            } catch (e) {
+                document.getElementById('summary-venue').textContent = `Venue #${draft.venueId}`;
+            }
+
+            document.getElementById('proceed-payment').onclick = async () => {
+                try {
+                    const result = await API.createBooking(draft);
+                    // Booking created, proceed to payment
+                    sessionStorage.setItem('currentBookingId', result.id);
+                    window.location.href = 'payment.html';
+                } catch (err) {
+                    alert('Booking failed: ' + err.message);
+                }
+            };
+        });
+    </script>
+</body>
+
+</html>

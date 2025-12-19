@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking History – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/booking_history.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Your Booking History</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:2rem;">
+            <table class="booking-table">
+                <thead>
+                    <tr>
+                        <th>Booking #</th>
+                        <th>Venue</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sample row -->
+                    <tr>
+                        <td>#123456</td>
+                        <td>Sample Venue</td>
+                        <td>2025-12-20 10:00</td>
+                        <td><span class="status active">Active</span></td>
+                        <td>
+                            <a href="e_ticket.html" class="button">View Ticket</a>
+                            <button class="button cancel-btn">Cancel</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+
+            try {
+                const bookings = await API.getBookings();
+                tbody.innerHTML = '';
+
+                if (bookings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No bookings found.</td></tr>';
+                    return;
+                }
+
+                // sort by date desc
+                bookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                bookings.forEach(b => {
+                    const row = document.createElement('tr');
+                    const date = new Date(b.date).toLocaleDateString();
+
+                    row.innerHTML = `
+                        <td>#${b.id}</td>
+                        <td class="venue-name">Loading...</td> <!-- We need venue name from ID probably or fetch separate -->
+                        <td>${date} ${b.timeSlot}</td>
+                        <td><span class="status ${b.status.toLowerCase()}">${b.status}</span></td>
+                        <td>
+                            <a href="e_ticket.html?id=${b.id}" class="button" style="padding:0.25rem 0.5rem; font-size:0.8rem;">View</a>
+                            ${b.status === 'Active' ? `<button class="button cancel-btn" data-id="${b.id}" style="padding:0.25rem 0.5rem; font-size:0.8rem; background:#d9534f;">Cancel</button>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+
+                    // Fetch venue name separately or if I had included it in API response
+                    // Booking API findMany by default doesn't include relations unless specified
+                    // I should assume I need to fetch venue details or update backend to include user
+                    // For now, lazy load venue name
+                    API.getVenue(b.venueId).then(v => {
+                        row.querySelector('.venue-name').textContent = v.name;
+                    }).catch(() => {
+                        row.querySelector('.venue-name').textContent = `Venue #${b.venueId}`;
+                    });
+                });
+
+                // Bind cancel buttons
+                document.querySelectorAll('.cancel-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (confirm('Are you sure you want to cancel this booking?')) {
+                            try {
+                                const id = btn.getAttribute('data-id');
+                                await API.cancelBooking(id);
+                                window.location.reload();
+                            } catch (e) { alert(e.message); }
+                        }
+                    });
+                });
+
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Error loading history.</td></tr>';
+            }
+        });
+    </script>
+</body>
+
+</html>

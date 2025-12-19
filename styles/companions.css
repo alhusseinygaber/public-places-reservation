@@ -1,0 +1,28 @@
+/* companions.css */
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.button {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: none;
+}

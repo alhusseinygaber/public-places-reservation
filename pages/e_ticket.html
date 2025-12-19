@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E‑Ticket – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/e_ticket.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Your Ticket</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:2rem; text-align:center;">
+            <img src="../assets/qr_placeholder.png" alt="QR Code" style="width:200px; margin:1rem 0;" />
+            <p><strong>Booking Number:</strong> <span id="ticket-number">#123456</span></p>
+            <p><strong>Venue:</strong> <span id="ticket-venue">Venue Name</span></p>
+            <p><strong>Date & Time:</strong> <span id="ticket-datetime">2025-12-20 10:00</span></p>
+            <p><strong>Expiry:</strong> <span id="ticket-expiry">2025-12-20 12:00</span></p>
+            <button class="button" style="margin-top:1rem;">Download Ticket</button>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (!id) {
+                alert('No ticket ID');
+                window.location.href = 'booking_history.html';
+                return;
+            }
+
+            try {
+                const booking = await API.getBooking(id);
+                document.getElementById('ticket-number').textContent = `#${booking.id}`;
+                document.getElementById('ticket-venue').textContent = booking.venue ? booking.venue.name : `Venue #${booking.venueId}`;
+                document.getElementById('ticket-datetime').textContent = `${new Date(booking.date).toLocaleDateString()} ${booking.timeSlot}`;
+                // Expiry logic? Maybe 2 hours after timeSlot start? Or just showing booking time.
+                document.getElementById('ticket-expiry').textContent = 'Valid for entry only';
+
+                if (booking.qrCodeData) {
+                    // backend returns DataURL string if updated, or base64 if old. 
+                    // My updated payments.js saves result of qrcode.toDataURL(), which IS a data URL.
+                    document.querySelector('img').src = booking.qrCodeData;
+                }
+
+                document.querySelector('button.button').onclick = () => {
+                    window.print();
+                };
+            } catch (err) {
+                console.error(err);
+                alert('Failed to load ticket');
+            }
+        });
+    </script>
+</body>
+
+</html>

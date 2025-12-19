@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Confirmation – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/confirmation.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Booking Confirmed!</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:2rem; text-align:center;">
+            <p class="success" style="color:var(--color-primary); font-size:1.2rem;">Your payment was successful.</p>
+            <p><strong>Booking Number:</strong> <span id="booking-number">#123456</span></p>
+            <img src="../assets/qr_placeholder.png" alt="QR Code" style="width:200px; margin:1rem 0;" />
+            <button class="button" style="margin-top:1rem;">Download Ticket</button>
+            <a href="booking_history.html" class="button" style="margin-left:1rem;">Go to Bookings</a>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bid = sessionStorage.getItem('currentBookingId');
+            if (bid) {
+                document.getElementById('booking-number').textContent = `#${bid}`;
+            }
+
+            // "Download Ticket" button to open e_ticket page
+            document.querySelector('button.button').onclick = () => {
+                if (bid) window.location.href = `e_ticket.html?id=${bid}`;
+                else window.location.href = 'booking_history.html';
+            };
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review Booking – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/review_booking.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Review Your Booking</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:1rem;">
+            <p><strong>Venue:</strong> <span id="review-venue-name"></span></p>
+            <p><strong>Date & Time:</strong> <span id="review-date-time"></span></p>
+            <p><strong>Visitors:</strong> <span id="review-visitors"></span></p>
+            <p><strong>Total Price:</strong> <span id="review-price"></span> EGP</p>
+            <p><strong>Cancellation Policy:</strong> Free cancellation up to 24 hours before the booking.</p>
+            <button class="button" id="pay-now-btn" style="margin-top:1rem;">Pay Now</button>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const draft = JSON.parse(sessionStorage.getItem('bookingDraft') || '{}');
+            if (!draft.venueId) {
+                alert('No booking data found');
+                window.location.href = 'all_places.html';
+                return;
+            }
+            try {
+                const venue = await API.getVenue(draft.venueId);
+                document.getElementById('review-venue-name').textContent = venue.name;
+                document.getElementById('review-date-time').textContent = `${draft.date} – ${draft.timeSlot}`;
+                const visitors = draft.visitors || 1;
+                document.getElementById('review-visitors').textContent = visitors;
+                const total = (draft.venuePrice || venue.price) * visitors;
+                document.getElementById('review-price').textContent = total.toFixed(2);
+            } catch (e) {
+                console.error(e);
+                alert('Failed to load venue');
+            }
+            document.getElementById('pay-now-btn').onclick = () => {
+                // Store final booking data and go to payment page
+                const final = { ...draft, totalPrice: document.getElementById('review-price').textContent };
+                sessionStorage.setItem('finalBooking', JSON.stringify(final));
+                window.location.href = 'payment.html';
+            };
+        });
+    </script>
+</body>
+
+</html>

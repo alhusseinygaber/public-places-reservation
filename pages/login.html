@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/login.css" />
+    <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <img src="../assets/logo.svg" alt="Logo" style="width: 60px; height: 60px; margin-bottom: 1rem;">
+            <h1>Log In</h1>
+        </header>
+        <form id="login-form" class="glass" style="padding:2rem; max-width:400px; margin:auto;">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div class="form-options"
+                style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
+                <label><input type="checkbox" id="remember-me" /> Remember Me</label>
+                <a href="#" style="color:var(--color-primary); text-decoration:none;">Forgot Password?</a>
+            </div>
+            <button type="submit" class="button" style="margin-top:1rem; width:100%;">Log In</button>
+            <p id="error-msg" style="color:red; text-align:center; display:none;"></p>
+            <div style="margin-top:1rem; text-align:center;">
+                <a href="register.html" class="button" style="background:var(--color-primary); color:#fff;">Create a New
+                    Account</a>
+            </div>
+        </form>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            try {
+                const result = await API.login(email, password);
+                if (result.token) {
+                    API.setToken(result.token);
+                    // Store user info if needed
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (err) {
+                errorMsg.textContent = err.message;
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

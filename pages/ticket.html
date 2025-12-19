@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/ticket.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>Your Ticket</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0; padding:1rem; text-align:center;">
+            <div id="qr-code" style="margin-bottom:1rem;">
+                <!-- QR code will be injected here -->
+            </div>
+            <p><strong>Venue:</strong> <span id="ticket-venue"></span></p>
+            <p><strong>Date & Time:</strong> <span id="ticket-datetime"></span></p>
+            <p><strong>Visitors:</strong> <span id="ticket-visitors"></span></p>
+            <p><strong>Total Price:</strong> <span id="ticket-price"></span> EGP</p>
+            <button class="button" id="download-pdf" style="margin-top:1rem;">Download PDF</button>
+            <button class="button" id="email-ticket" style="margin-top:1rem; margin-left:0.5rem;">Email Ticket</button>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const ticket = JSON.parse(sessionStorage.getItem('finalBooking') || '{}');
+            if (!ticket.venueId) {
+                alert('No ticket data found');
+                window.location.href = 'all_places.html';
+                return;
+            }
+            try {
+                const venue = await API.getVenue(ticket.venueId);
+                document.getElementById('ticket-venue').textContent = venue.name;
+                document.getElementById('ticket-datetime').textContent = `${ticket.date} – ${ticket.timeSlot}`;
+                const visitors = ticket.visitors || 1;
+                document.getElementById('ticket-visitors').textContent = visitors;
+                document.getElementById('ticket-price').textContent = ticket.totalPrice || ((ticket.venuePrice || venue.price) * visitors).toFixed(2);
+                // Simple QR code generation using data URL (placeholder)
+                const qrDiv = document.getElementById('qr-code');
+                qrDiv.innerHTML = `<img src="../assets/placeholder.jpg" alt="QR Code" style="width:150px;height:150px;" />`;
+            } catch (e) {
+                console.error(e);
+                alert('Failed to load ticket details');
+            }
+            document.getElementById('download-pdf').onclick = () => {
+                alert('PDF download not implemented in this demo');
+            };
+            document.getElementById('email-ticket').onclick = () => {
+                alert('Email sending not implemented in this demo');
+            };
+        });
+    </script>
+</body>
+
+</html>

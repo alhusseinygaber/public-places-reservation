@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/profile.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>My Profile</h1>
+        </header>
+
+        <section class="glass" style="margin:2rem 0; padding:1rem;">
+            <!-- Profile Picture Section -->
+            <div style="text-align:center; margin-bottom:2rem;">
+                <img id="profile-preview" src="../assets/user_placeholder.png" alt="Profile"
+                    style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 3px solid var(--color-primary); margin-bottom:1rem;" />
+                <br />
+                <input type="file" id="image-upload" accept="image/*" style="display:none;" />
+                <button class="button" onclick="document.getElementById('image-upload').click()">Change Photo</button>
+            </div>
+
+            <form id="profile-form">
+                <label>First Name</label>
+                <input type="text" id="firstName" required />
+
+                <label>Last Name</label>
+                <input type="text" id="lastName" required />
+
+                <label>Email</label>
+                <input type="email" id="email" required />
+
+                <label>Phone</label>
+                <input type="tel" id="phone" required />
+
+                <button class="button" type="submit">Save Changes</button>
+            </form>
+
+            <hr />
+
+            <h2>Change Password</h2>
+            <form id="password-form">
+                <label>Current Password</label>
+                <input type="password" id="currentPwd" required />
+
+                <label>New Password</label>
+                <input type="password" id="newPwd" required />
+
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmPwd" required />
+
+                <button class="button" type="submit">Update Password</button>
+            </form>
+        </section>
+
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script src="../scripts/loading.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('firstName').value = user.firstName || '';
+            document.getElementById('lastName').value = user.lastName || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('phone').value = user.phone || '';
+
+            // Load existing profile image
+            if (user.profileImage) {
+                document.getElementById('profile-preview').src = `http://localhost:3000${user.profileImage}`;
+            }
+
+            // Handle Image Upload
+            const fileInput = document.getElementById('image-upload');
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('image', file);
+
+                showLoading();
+                try {
+                    const res = await API.uploadProfileImage(formData);
+                    // Update preview
+                    const newPath = `http://localhost:3000${res.imagePath}`;
+                    document.getElementById('profile-preview').src = newPath;
+
+                    // Update local storage
+                    user.profileImage = res.imagePath;
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    // Update Navbar (reload or direct DOM manip)
+                    alert('Profile photo updated!');
+                    location.reload();
+                } catch (err) {
+                    console.error(err);
+                    alert('Failed to upload image');
+                } finally {
+                    hideLoading();
+                }
+            });
+
+            // Update profile
+            document.getElementById('profile-form').onsubmit = async e => {
+                e.preventDefault();
+                showLoading();
+                const payload = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                };
+                try {
+                    await API.updateProfile(payload);
+                    alert('Profile updated');
+                    const updated = { ...user, ...payload };
+                    localStorage.setItem('user', JSON.stringify(updated));
+                } catch (err) {
+                    console.error(err);
+                    alert('Failed to update profile');
+                } finally { hideLoading(); }
+            };
+
+            // Change password
+            document.getElementById('password-form').onsubmit = async e => {
+                e.preventDefault();
+                const cur = document.getElementById('currentPwd').value;
+                const newPwd = document.getElementById('newPwd').value;
+                const confirm = document.getElementById('confirmPwd').value;
+                if (newPwd !== confirm) { alert('Passwords do not match'); return; }
+                showLoading();
+                try {
+                    await API.changePassword({ currentPassword: cur, newPassword: newPwd });
+                    alert('Password changed');
+                } catch (err) {
+                    console.error(err);
+                    alert('Failed to change password');
+                } finally { hideLoading(); }
+            };
+        });
+    </script>
+</body>
+
+</html>

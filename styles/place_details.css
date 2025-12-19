@@ -1,0 +1,61 @@
+/* Place Details page specific styles */
+#photo-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+#photo-carousel img {
+    flex: 0 0 100%;
+    width: 100%;
+    border-radius: 12px;
+    scroll-snap-align: start;
+    margin-bottom: 0;
+}
+
+/* Optional navigation button styling */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+.carousel-nav.prev {
+    left: 10px;
+}
+
+.carousel-nav.next {
+    right: 10px;
+}
+
+#place-description {
+    line-height: 1.6;
+}
+
+#map {
+    background: var(--color-surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+button.button {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+button.button:hover {
+    transform: scale(1.05);
+}

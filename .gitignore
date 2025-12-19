@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output
+/dist
+
+# Prisma files
+prisma/dev.db
+prisma/migrations/
+
+# IDE files
+.vscode/
+.idea/
+
+# Uploads folder (if you store user uploads locally)
+uploads/

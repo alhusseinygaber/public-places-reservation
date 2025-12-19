@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Places – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/all_places.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1>All Public Places</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0;">
+            <div class="filters" style="display:flex; flex-wrap:wrap; gap:1rem;">
+                <select id="province-filter">
+                    <option value="">All Provinces</option>
+                </select>
+                <select id="type-filter">
+                    <option value="">All Types</option>
+                </select>
+                <input type="date" id="date-filter" />
+                <input type="range" id="price-filter" min="0" max="500" step="10" />
+                <button id="apply-filters" class="button">Apply Filters</button>
+            </div>
+        </section>
+        <section class="glass" id="places-grid"
+            style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:1rem; margin-bottom:2rem;">
+            <!-- Place cards will be injected here -->
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Populate filters
+            const provinces = ['Cairo', 'Giza', 'Alexandria', 'Luxor', 'Aswan'];
+            const types = ['Museum', 'Park', 'Stadium', 'Club', 'Historical Site'];
+
+            const provSelect = document.getElementById('province-filter');
+            provinces.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                provSelect.appendChild(opt);
+            });
+
+            const typeSelect = document.getElementById('type-filter');
+            types.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                typeSelect.appendChild(opt);
+            });
+
+            // Parse URL params
+            const params = new URLSearchParams(window.location.search);
+            const search = params.get('search');
+            if (search) { // If search exists, maybe show it somewhere or use it
+                // We don't have a search input here, but dashboard sends it
+            }
+            if (params.get('type')) typeSelect.value = params.get('type');
+            if (params.get('province')) provSelect.value = params.get('province');
+
+            loadVenues();
+
+            document.getElementById('apply-filters').addEventListener('click', loadVenues);
+        });
+
+        async function loadVenues() {
+            const province = document.getElementById('province-filter').value;
+            const type = document.getElementById('type-filter').value;
+            // price filter logic needs thought, input range is single value (max?)
+            // let's assume it's max price
+            const maxPrice = document.getElementById('price-filter').value;
+
+            const params = new URLSearchParams(window.location.search);
+            const search = params.get('search');
+
+            const filters = {};
+            if (province) filters.province = province;
+            if (type) filters.type = type;
+            if (search) filters.search = search;
+            if (maxPrice > 0) filters.maxPrice = maxPrice;
+
+            try {
+                const venues = await API.getVenues(filters);
+                const grid = document.getElementById('places-grid');
+                grid.innerHTML = '';
+
+                if (venues.length === 0) {
+                    grid.innerHTML = '<p>No places found matching your criteria.</p>';
+                    return;
+                }
+
+                venues.forEach(venue => {
+                    const card = document.createElement('div');
+                    card.className = 'place-card glass'; // reusing glass class or define specific
+                    card.style.padding = '1rem';
+                    card.style.textAlign = 'center';
+
+                    const images = venue.images ? venue.images.split(',') : [];
+                    const imageSrc = images[0] || '../assets/placeholder.jpg';
+
+                    card.innerHTML = `
+                        <div style="height:150px; background-color:#444; border-radius:8px; margin-bottom:1rem; background-image:url('${imageSrc}'); background-size:cover; background-position:center;"></div>
+                        <h3>${venue.name}</h3>
+                        <p>${venue.province} | ${venue.type}</p>
+                        <p style="font-weight:bold; margin:0.5rem 0;">${venue.price} EGP</p>
+                        <a href="place_details.html?id=${venue.id}" class="button">View Details</a>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('places-grid').innerHTML = '<p>Error loading places.</p>';
+            }
+        }
+    </script>
+</body>
+
+</html>

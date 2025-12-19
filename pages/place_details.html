@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Place Details – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/place_details.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <h1 id="place-name">Place Name</h1>
+        </header>
+        <section class="glass" style="margin:2rem 0;">
+            <div class="carousel-wrapper" style="position:relative;">
+                <div class="carousel" id="photo-carousel">
+                    <!-- Image placeholders will be injected here -->
+                </div>
+                <button class="carousel-nav prev">&#9664;</button>
+                <button class="carousel-nav next">&#9654;</button>
+            </div>
+            <p id="place-description" style="margin-top:1rem;">Detailed description of the venue.</p>
+            <p><strong>Address:</strong> <span id="place-address">123 Street, City</span></p>
+        </section>
+        <div id="map" style="height:300px; background:#ccc; margin-top:1rem; border-radius:12px;">
+            <!-- Map placeholder -->
+        </div>
+        <p><strong>Price:</strong> <span id="place-price">EGP 100</span></p>
+        <p><strong>Maximum Capacity:</strong> <span id="place-capacity">200</span></p>
+        <button class="button" style="margin-top:1rem;" id="set-destination-btn">Set as Destination</button>
+        <script>
+            document.getElementById('set-destination-btn').addEventListener('click', () => {
+                const destination = {
+                    id: venue.id,
+                    name: venue.name,
+                    latitude: venue.latitude,
+                    longitude: venue.longitude
+                };
+                localStorage.setItem('destination', JSON.stringify(destination));
+                alert('Destination set to ' + venue.name);
+            });
+        </script>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (!id) {
+                alert('No venue specified');
+                window.location.href = 'all_places.html';
+                return;
+            }
+
+            try {
+                const venue = await API.getVenue(id);
+                document.getElementById('place-name').textContent = venue.name;
+                document.getElementById('place-description').textContent = venue.description || 'No description available.';
+                document.getElementById('place-address').textContent = venue.address;
+                document.getElementById('place-price').textContent = `${venue.price} EGP`;
+                document.getElementById('place-capacity').textContent = venue.capacity;
+
+                // Handle images
+                const carousel = document.getElementById('photo-carousel');
+                const images = venue.images ? venue.images.split(',') : ['../assets/placeholder.jpg'];
+
+                // Simple slideshow or just first image for now
+                // Let's just output all images stacked or scrollable
+                carousel.innerHTML = images.map(src => `<img src="${src}" alt="${venue.name}" style="width:100%; border-radius:12px; margin-bottom:1rem;" />`).join('');
+
+                // Navigation buttons
+                const prevBtn = document.querySelector('.carousel-nav.prev');
+                const nextBtn = document.querySelector('.carousel-nav.next');
+                prevBtn.addEventListener('click', () => {
+                    carousel.scrollBy({ left: -carousel.clientWidth, behavior: 'smooth' });
+                });
+                nextBtn.addEventListener('click', () => {
+                    carousel.scrollBy({ left: carousel.clientWidth, behavior: 'smooth' });
+                });
+
+                // Book Now button
+                const bookBtn = document.querySelector('button.button');
+                bookBtn.onclick = () => {
+                    window.location.href = `schedule.html?venueId=${venue.id}`;
+                };
+
+            } catch (err) {
+                console.error(err);
+                alert('Failed to load venue details');
+            }
+        });
+    </script>
+</body>
+
+</html>

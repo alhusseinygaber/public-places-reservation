@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/dashboard.css" />
+    <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+</head>
+
+<body>
+    <div class="container">
+        <header class="glass" style="text-align:center; margin-top:2rem;">
+            <img src="../assets/logo.svg" alt="Logo"
+                style="width: 50px; height: 50px; display: block; margin: 0 auto 1rem;">
+            <h1>Welcome, <span id="user-name">Visitor</span></h1>
+        </header>
+        <section class="glass" style="margin:2rem 0;">
+            <input type="text" id="search-bar" placeholder="Search places..." class="search-input" />
+        </section>
+        <section class="glass categories" style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;">
+            <button class="category-btn">Museums</button>
+            <button class="category-btn">Parks</button>
+            <button class="category-btn">Playgrounds</button>
+            <button class="category-btn">Clubs</button>
+        </section>
+        <section class="glass suggestions" style="margin-top:2rem;">
+            <h2>Suggested / Most Booked Places</h2>
+            <div class="place-grid" id="place-grid"></div>
+        </section>
+        <footer class="glass" style="text-align:center; margin-top:2rem; padding:1rem;">
+            <label for="theme-toggle">Light Mode</label>
+            <input type="checkbox" id="theme-toggle" />
+        </footer>
+    </div>
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = API.getToken();
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // Fetch User Profile
+                const user = await API.getProfile();
+                document.getElementById('user-name').textContent = `${user.firstName} ${user.lastName}`;
+
+                // Fetch Suggested Venues
+                const venues = await API.getVenues();
+                const grid = document.getElementById('place-grid');
+                grid.innerHTML = '';
+
+                // Show top 4 or all
+                venues.slice(0, 4).forEach(venue => {
+                    const card = document.createElement('div');
+                    card.className = 'place-card';
+                    // Use first image or placeholder
+                    // Note: venue.images is stored as comma-separated string in SQLite setup
+                    const images = venue.images ? venue.images.split(',') : [];
+                    const imageSrc = images[0] || '../assets/placeholder.jpg'; // Ensure this asset exists or use a colored div
+
+                    card.innerHTML = `
+                        <div style="height:120px; background-color:#ccc; border-radius:8px; margin-bottom:0.5rem; background-image:url('${imageSrc}'); background-size:cover; background-position:center;"></div>
+                        <h3>${venue.name}</h3>
+                        <p>${venue.province} - ${venue.type}</p>
+                        <p style="font-weight:bold; margin:0.5rem 0;">${venue.price} EGP</p>
+                        <a href="place_details.html?id=${venue.id}" class="button" style="font-size:0.8rem;">View Details</a>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error('Dashboard load error', err);
+                if (err.message === 'Invalid token' || err.message === 'Missing token') {
+                    API.logout();
+                }
+            }
+        });
+
+        // Search functionality
+        document.getElementById('search-bar').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                window.location.href = `all_places.html?search=${this.value}`;
+            }
+        });
+
+        // Category buttons
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                window.location.href = `all_places.html?type=${btn.textContent}`;
+            });
+        });
+    </script>
+</body>
+
+</html>
