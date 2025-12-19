@@ -1,0 +1,453 @@
+/* Invoice page specific styles */
+body {
+    background: var(--color-bg-solid);
+    padding: 2rem 0;
+}
+
+.invoice-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.invoice-card {
+    background: white;
+    color: #2D3748;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    position: relative;
+}
+
+/* Header Section */
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 2rem;
+}
+
+.company-info {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.company-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.company-info h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary-solid);
+    margin-bottom: 0.5rem;
+}
+
+.company-info p {
+    font-size: 0.9rem;
+    color: #4A5568;
+    margin: 0.25rem 0;
+}
+
+.invoice-meta {
+    text-align: right;
+}
+
+.invoice-meta h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary-solid);
+    margin-bottom: 0.75rem;
+}
+
+.invoice-meta p {
+    font-size: 0.95rem;
+    color: #4A5568;
+    margin: 0.5rem 0;
+}
+
+.invoice-meta strong {
+    color: #2D3748;
+}
+
+/* Divider */
+.divider {
+    height: 2px;
+    background: linear-gradient(90deg, #4FD1C5, #FF6B9D);
+    margin: 2rem 0;
+}
+
+/* Client Section */
+.client-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.client-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 0.75rem;
+}
+
+.client-info p {
+    font-size: 0.95rem;
+    color: #4A5568;
+    margin: 0.25rem 0;
+}
+
+.booking-status {
+    text-align: right;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: linear-gradient(135deg, #48BB78, #38A169);
+    color: white;
+    font-weight: 700;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Booking Details Table */
+.booking-details {
+    margin-bottom: 2rem;
+}
+
+.booking-details h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 1rem;
+}
+
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.details-table thead {
+    background: linear-gradient(135deg, #4FD1C5, #FF6B9D);
+}
+
+.details-table thead th {
+    padding: 1rem;
+    text-align: left;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.details-table tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid #E2E8F0;
+    color: #4A5568;
+    font-size: 0.95rem;
+}
+
+.details-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.details-table tbody tr:hover {
+    background: #F7FAFC;
+}
+
+.details-table strong {
+    color: #2D3748;
+    font-weight: 600;
+}
+
+.details-table small {
+    color: #718096;
+    font-size: 0.85rem;
+}
+
+/* Summary Section */
+.summary-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.summary-details {
+    flex: 1;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    color: #4A5568;
+}
+
+.summary-row span:first-child {
+    font-weight: 500;
+}
+
+.summary-row span:last-child {
+    font-weight: 600;
+    color: #2D3748;
+}
+
+.total-row {
+    font-size: 1.3rem;
+    color: #2D3748;
+    font-weight: 700;
+    padding-top: 1rem;
+}
+
+.total-row span {
+    color: var(--color-primary-solid);
+}
+
+.qr-section {
+    text-align: center;
+}
+
+.qr-section img {
+    width: 150px;
+    height: 150px;
+    border: 2px solid #E2E8F0;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.qr-section p {
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+/* Payment Information */
+.payment-info h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 1rem;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.payment-grid p {
+    font-size: 0.95rem;
+    color: #4A5568;
+    margin: 0.5rem 0;
+}
+
+.payment-grid strong {
+    color: #2D3748;
+}
+
+.status-paid {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #48BB78;
+    color: white;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Invoice Footer */
+.invoice-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-notes h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 0.75rem;
+}
+
+.footer-notes ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-notes li {
+    font-size: 0.85rem;
+    color: #4A5568;
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+    position: relative;
+}
+
+.footer-notes li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--color-primary-solid);
+    font-weight: bold;
+}
+
+.footer-contact {
+    text-align: right;
+}
+
+.footer-contact p {
+    font-size: 0.9rem;
+    color: #4A5568;
+    margin: 0.5rem 0;
+}
+
+.footer-contact strong {
+    color: #2D3748;
+    font-size: 1rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.action-buttons .button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.95rem;
+}
+
+.action-buttons .button.primary {
+    background: linear-gradient(135deg, #4FD1C5, #FF6B9D);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+}
+
+.action-buttons .button.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(79, 209, 197, 0.6);
+}
+
+.action-buttons .button.secondary {
+    background: white;
+    color: var(--color-primary-solid);
+    border: 2px solid var(--color-primary-solid);
+}
+
+.action-buttons .button.secondary:hover {
+    background: rgba(79, 209, 197, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .invoice-container {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .invoice-card {
+        box-shadow: none;
+        padding: 1.5rem;
+    }
+
+    .action-buttons {
+        display: none;
+    }
+
+    .divider {
+        background: #E2E8F0;
+    }
+
+    .details-table thead {
+        background: #2D3748 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .status-badge,
+    .status-paid {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .invoice-card {
+        padding: 1.5rem;
+    }
+
+    .invoice-header {
+        flex-direction: column;
+    }
+
+    .company-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .invoice-meta {
+        text-align: left;
+    }
+
+    .client-section {
+        flex-direction: column;
+    }
+
+    .booking-status {
+        text-align: left;
+        margin-top: 1rem;
+    }
+
+    .summary-section {
+        flex-direction: column-reverse;
+    }
+
+    .invoice-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-contact {
+        text-align: left;
+    }
+
+    .details-table {
+        font-size: 0.85rem;
+    }
+
+    .details-table thead th,
+    .details-table tbody td {
+        padding: 0.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons .button {
+        width: 100%;
+    }
+}

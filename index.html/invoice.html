@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice – Public Places Reservation</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/invoice.css" />
+    <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+</head>
+
+<body>
+    <div class="invoice-container">
+        <div class="invoice-card">
+            <!-- Invoice Header -->
+            <header class="invoice-header">
+                <div class="company-info">
+                    <img src="../assets/logo.svg" alt="Company Logo" class="company-logo" />
+                    <div>
+                        <h1>Public Places Reservation</h1>
+                        <p>123 Tourism Street, Cairo, Egypt</p>
+                        <p>Phone: +20 123 456 7890 | Email: info@publicplaces.eg</p>
+                    </div>
+                </div>
+                <div class="invoice-meta">
+                    <h2>INVOICE</h2>
+                    <p><strong>Invoice #:</strong> <span id="invoice-number">INV-2025-0001</span></p>
+                    <p><strong>Date:</strong> <span id="invoice-date"></span></p>
+                    <p><strong>Due Date:</strong> <span id="due-date"></span></p>
+                </div>
+            </header>
+
+            <div class="divider"></div>
+
+            <!-- Client Information -->
+            <section class="client-section">
+                <div class="client-info">
+                    <h3>Bill To:</h3>
+                    <p><strong id="client-name">Client Name</strong></p>
+                    <p id="client-email">client@example.com</p>
+                    <p id="client-phone">+20 123 456 789</p>
+                    <p id="client-address">Client Address</p>
+                </div>
+                <div class="booking-status">
+                    <span class="status-badge" id="booking-status">CONFIRMED</span>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- Booking Details Table -->
+            <section class="booking-details">
+                <h3>Booking Details</h3>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Date & Time</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booking-items">
+                        <!-- Items will be injected here -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Summary Section -->
+            <section class="summary-section">
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">EGP 0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (14%):</span>
+                        <span id="tax">EGP 0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Service Fee:</span>
+                        <span id="service-fee">EGP 0.00</span>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="summary-row total-row">
+                        <span>Total Amount:</span>
+                        <span id="total-amount">EGP 0.00</span>
+                    </div>
+                </div>
+                <div class="qr-section">
+                    <img src="../assets/placeholder.jpg" alt="QR Code" id="qr-code" />
+                    <p>Scan for verification</p>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- Payment Information -->
+            <section class="payment-info">
+                <h3>Payment Information</h3>
+                <div class="payment-grid">
+                    <div>
+                        <p><strong>Payment Method:</strong> <span id="payment-method">Credit Card</span></p>
+                        <p><strong>Payment Status:</strong> <span class="status-paid" id="payment-status">PAID</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p><strong>Transaction ID:</strong> <span id="transaction-id">TXN123456789</span></p>
+                        <p><strong>Payment Date:</strong> <span id="payment-date"></span></p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <!-- Footer Notes -->
+            <section class="invoice-footer">
+                <div class="footer-notes">
+                    <h4>Terms & Conditions:</h4>
+                    <ul>
+                        <li>Booking confirmation is subject to availability</li>
+                        <li>Cancellations must be made 24 hours in advance for a full refund</li>
+                        <li>Please arrive 15 minutes before your scheduled time</li>
+                        <li>This invoice is computer-generated and does not require a signature</li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <p><strong>Need help?</strong></p>
+                    <p>Contact us at support@publicplaces.eg</p>
+                    <p>Visit our website: www.publicplaces.eg</p>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="button primary" onclick="window.print()">
+                    🖨️ Print Invoice
+                </button>
+                <button class="button secondary" onclick="downloadPDF()">
+                    📥 Download PDF
+                </button>
+                <button class="button secondary" onclick="emailInvoice()">
+                    📧 Email Invoice
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/theme.js"></script>
+    <script src="../scripts/api.js"></script>
+    <script>
+        // Load invoice data
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get booking data from session storage
+            const booking = JSON.parse(sessionStorage.getItem('finalBooking') || '{}');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            // Set dates
+            const today = new Date();
+            document.getElementById('invoice-date').textContent = today.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('due-date').textContent = today.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('payment-date').textContent = today.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Generate invoice number
+            const invoiceNum = 'INV-' + today.getFullYear() + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+            document.getElementById('invoice-number').textContent = invoiceNum;
+
+            // Set client info
+            document.getElementById('client-name').textContent = `${user.firstName || 'Guest'} ${user.lastName || 'User'}`;
+            document.getElementById('client-email').textContent = user.email || 'N/A';
+            document.getElementById('client-phone').textContent = user.phone || 'N/A';
+            document.getElementById('client-address').textContent = user.address || 'N/A';
+
+            // Generate transaction ID
+            document.getElementById('transaction-id').textContent = 'TXN' + Date.now();
+
+            // Populate booking items
+            const itemsContainer = document.getElementById('booking-items');
+            let subtotal = 0;
+
+            if (booking.venueId) {
+                try {
+                    const venue = await API.getVenue(booking.venueId);
+                    const quantity = booking.visitors || 1;
+                    const unitPrice = venue.price || 50;
+                    const total = quantity * unitPrice;
+                    subtotal = total;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>
+                            <strong>${venue.name || 'Venue Booking'}</strong><br>
+                            <small>${venue.description || 'Venue reservation'}</small>
+                        </td>
+                        <td>${booking.date || 'TBD'}<br><small>${booking.timeSlot || 'TBD'}</small></td>
+                        <td>${quantity}</td>
+                        <td>EGP ${unitPrice.toFixed(2)}</td>
+                        <td>EGP ${total.toFixed(2)}</td>
+                    `;
+                    itemsContainer.appendChild(row);
+                } catch (e) {
+                    console.error('Failed to load venue:', e);
+                }
+            } else {
+                // Default booking item
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>General Admission</strong><br><small>Public place reservation</small></td>
+                    <td>TBD<br><small>TBD</small></td>
+                    <td>1</td>
+                    <td>EGP 50.00</td>
+                    <td>EGP 50.00</td>
+                `;
+                itemsContainer.appendChild(row);
+                subtotal = 50;
+            }
+
+            // Calculate totals
+            const tax = subtotal * 0.14;
+            const serviceFee = 5;
+            const total = subtotal + tax + serviceFee;
+
+            document.getElementById('subtotal').textContent = `EGP ${subtotal.toFixed(2)}`;
+            document.getElementById('tax').textContent = `EGP ${tax.toFixed(2)}`;
+            document.getElementById('service-fee').textContent = `EGP ${serviceFee.toFixed(2)}`;
+            document.getElementById('total-amount').textContent = `EGP ${total.toFixed(2)}`;
+        });
+
+        function downloadPDF() {
+            alert('📥 PDF download functionality will be implemented with a PDF library');
+        }
+
+        function emailInvoice() {
+            alert('📧 Email functionality will be implemented with backend integration');
+        }
+    </script>
+</body>
+
+</html>
